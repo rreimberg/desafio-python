@@ -6,12 +6,15 @@ Todos os endpoints devem aceitar e responder somente JSON, inclusive ao responde
 
 Todas as mensagens de erro devem ter o formato:
 
+```json
     {"mensagem": "mensagem de erro"}
+```
 
 ## Cadastro
 
 * Esse endpoint deverá receber um usuário com os campos "nome", "email", "senha", mais uma lista de objetos "telefone", seguindo o formato abaixo:
 
+```json
     {
         "name": "João da Silva",
         "email": "joao@silva.org",
@@ -23,6 +26,7 @@ Todas as mensagens de erro devem ter o formato:
             }
         ]
     }
+```
 
 * Responder o código de status HTTP apropriado
 * Em caso de sucesso, retorne o usuário, mais os campos:
