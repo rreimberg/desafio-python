@@ -57,7 +57,11 @@ Todas as mensagens de erro devem ter o formato:
 * Banco de dados em memória, de preferência SQLite.
 * Gestão de dependências via gerenciador de pacotes.
 * Persistência com ferramenta de ORM adequada.
-* Escolha livre de framework
+* Escolha livre de framework.
+* Prazo de 4 dias corridos.
+* Entregar um repo público (github ou bitbucket) com o código fonte.
+* Entregar a API rodando em algum host (Heroku, AWS, etc).
+
 
 ## Requisitos desejáveis
 * JWT como token
