@@ -3,6 +3,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
+from api_hooks import ApiResponse
+
 db = SQLAlchemy()
 
 
@@ -23,5 +25,7 @@ def create_app(set_config=set_config):
     app.db = db
 
     register_uris(app)
+
+    app.response_class = ApiResponse
 
     return app
