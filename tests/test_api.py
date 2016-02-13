@@ -85,3 +85,20 @@ class ApiTestCase(BaseTestCase):
 
         response = self.client.post('/register/', data=json.dumps(params), headers=headers)
         self.assertEqual(201, response.status_code)
+
+    def test_register_pre_existent_email(self):
+        headers = {'Content-Type': 'application/json'}
+
+        params = {
+            'name': 'Test',
+            'email': 'existent@email.com',
+            'password': '1234',
+            'phones': [
+                {'ddd': '11', 'number': '12345678'}
+            ],
+        }
+
+        response = self.client.post('/register/', data=json.dumps(params), headers=headers)
+
+        self.assertEqual(400, response.status_code)
+        self.assertEqual('{"mensagem": "Email já cadastrado"}', response.data)

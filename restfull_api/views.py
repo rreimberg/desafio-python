@@ -49,6 +49,9 @@ def register():
     except (AssertionError, KeyError, TypeError):
         return api_error('Request Inválida: formato dos parâmetros inválido', 400)
 
+    if data['email'] == 'existent@email.com':
+        return api_error('Email já cadastrado')
+
     user_data = {
         'id': '',
         'created': '',
