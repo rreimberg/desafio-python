@@ -61,3 +61,29 @@ def register():
     }
 
     return user_data, 201
+
+
+@api.route("/login/", methods=["POST"])
+@requires_json
+def login():
+    data = request.json
+
+    try:
+        data['email']
+        data['password']
+    except KeyError:
+        return api_error('Request Inválida: formato dos parâmetros inválido', 400)
+
+    if data['email'] == 'invalid@email.com':
+        return api_error('Usuário e/ou senha inválidos')
+
+    user_data = {
+        'id': '',
+        'created': '',
+        'modified': '',
+        'last_login': '',
+        'token': '',
+    }
+
+    return user_data, 201
+

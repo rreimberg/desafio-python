@@ -102,3 +102,35 @@ class ApiTestCase(BaseTestCase):
 
         self.assertEqual(400, response.status_code)
         self.assertEqual('{"mensagem": "Email já cadastrado"}', response.data)
+
+    def test_login_endpoint_required_params_validation(self):
+        params = {}
+        headers = {'Content-Type': 'application/json'}
+
+        expected_response = '{"mensagem": "Request Inválida: formato dos parâmetros inválido"}'
+
+        # empty request
+
+        response = self.client.post('/login/', data=json.dumps(params), headers=headers)
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(expected_response, response.data)
+
+        # incomplete params
+
+        params = {
+            'email': '',
+        }
+
+        response = self.client.post('/login/', data=json.dumps(params), headers=headers)
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(expected_response, response.data)
+
+    def test_login_endpoint_invalid_data(self):
+
+        params = {'email': 'invalid@email.com', 'password': 'invalid_password'}
+        headers = {'Content-Type': 'application/json'}
+        expected_response = '{"mensagem": "Usuário e/ou senha inválidos"}'
+
+        response = self.client.post('/login/', data=json.dumps(params), headers=headers)
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(expected_response, response.data)
