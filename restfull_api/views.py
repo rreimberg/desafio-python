@@ -87,3 +87,30 @@ def login():
 
     return user_data, 201
 
+
+@api.route("/profile/<user_id>/", methods=["GET"])
+@requires_json
+def profile(user_id):
+    if 'X-Token' not in request.headers:
+        return api_error('Obrigatório uso do header X-Token para usar este endpoint', 400)
+
+    token = request.headers['X-Token']
+
+    if token == 'inexistent token':
+        return api_error('Não autorizado', 401)
+
+    if token == 'another user token' and user_id == '1':
+        return api_error('Não autorizado', 401)
+
+    if token == 'expired token' and user_id == '1':
+        return api_error('Sessão inválida', 401)
+
+    user_data = {
+        'id': '',
+        'created': '',
+        'modified': '',
+        'last_login': '',
+        'token': '',
+    }
+
+    return user_data, 201

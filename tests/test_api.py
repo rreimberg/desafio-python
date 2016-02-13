@@ -134,3 +134,56 @@ class ApiTestCase(BaseTestCase):
         response = self.client.post('/login/', data=json.dumps(params), headers=headers)
         self.assertEqual(400, response.status_code)
         self.assertEqual(expected_response, response.data)
+
+    def test_profile_endpoint_requires_token(self):
+
+        headers = {'Content-Type': 'application/json'}
+
+        expected_response = '{"mensagem": "Obrigatório uso do header X-Token para usar este endpoint"}'
+
+        response = self.client.get('/profile/1/', headers=headers)
+
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(expected_response, response.data)
+
+    def test_profile_endpoint_with_inexistent_token(self):
+
+        headers = {
+            'Content-Type': 'application/json',
+            'X-Token': 'inexistent token',
+        }
+
+        expected_response = '{"mensagem": "Não autorizado"}'
+
+        response = self.client.get('/profile/1/', headers=headers)
+
+        self.assertEqual(401, response.status_code)
+        self.assertEqual(expected_response, response.data)
+
+    def test_profile_endpoint_with_wrong_token(self):
+
+        headers = {
+            'Content-Type': 'application/json',
+            'X-Token': 'another user token',
+        }
+
+        expected_response = '{"mensagem": "Não autorizado"}'
+
+        response = self.client.get('/profile/1/', headers=headers)
+
+        self.assertEqual(401, response.status_code)
+        self.assertEqual(expected_response, response.data)
+
+    def test_profile_endpoint_with_expired_token(self):
+
+        headers = {
+            'Content-Type': 'application/json',
+            'X-Token': 'expired token',
+        }
+
+        expected_response = '{"mensagem": "Sessão inválida"}'
+
+        response = self.client.get('/profile/1/', headers=headers)
+
+        self.assertEqual(401, response.status_code)
+        self.assertEqual(expected_response, response.data)
