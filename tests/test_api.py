@@ -23,3 +23,65 @@ class ApiTestCase(BaseTestCase):
 
         response_data = json.loads(valid_response.data)
         self.assertEqual('Bem vindo', response_data['mensagem'])
+
+    def test_register_endpoint_required_params_validation(self):
+        params = {}
+        headers = {'Content-Type': 'application/json'}
+
+        expected_response = '{"mensagem": "Request Inválida: formato dos parâmetros inválido"}'
+
+        # empty request
+
+        response = self.client.post('/register/', data=json.dumps(params), headers=headers)
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(expected_response, response.data)
+
+        # incomplete params
+
+        params = {
+            'name': '',
+        }
+
+        response = self.client.post('/register/', data=json.dumps(params), headers=headers)
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(expected_response, response.data)
+
+        # invalid phone format
+
+        params = {
+            'name': '',
+            'email': '',
+            'password': '',
+            'phones': '',
+        }
+
+        response = self.client.post('/register/', data=json.dumps(params), headers=headers)
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(expected_response, response.data)
+
+        # empty phone list
+
+        params = {
+            'name': '',
+            'email': '',
+            'password': '',
+            'phones': [{}],
+        }
+
+        response = self.client.post('/register/', data=json.dumps(params), headers=headers)
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(expected_response, response.data)
+
+        # correct parameters
+
+        params = {
+            'name': '',
+            'email': '',
+            'password': '',
+            'phones': [
+                {'ddd': '', 'number': ''}
+            ],
+        }
+
+        response = self.client.post('/register/', data=json.dumps(params), headers=headers)
+        self.assertEqual(201, response.status_code)

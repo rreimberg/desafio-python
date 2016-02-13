@@ -27,3 +27,34 @@ def requires_json(f):
 @requires_json
 def index():
     return {'mensagem': 'Bem vindo'}
+
+
+@api.route("/register/", methods=["POST"])
+@requires_json
+def register():
+    data = request.json
+    # check json structure explicitly
+    try:
+        data['name']
+        data['email']
+        data['password']
+        data['phones']
+
+        assert isinstance(data['phones'], list)
+
+        for phone in data['phones']:
+            phone['ddd']
+            phone['number']
+
+    except (AssertionError, KeyError, TypeError):
+        return api_error('Request Inválida: formato dos parâmetros inválido', 400)
+
+    user_data = {
+        'id': '',
+        'created': '',
+        'modified': '',
+        'last_login': '',
+        'token': '',
+    }
+
+    return user_data, 201
