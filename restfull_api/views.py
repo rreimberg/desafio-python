@@ -4,6 +4,8 @@ from functools import wraps
 
 from flask import Blueprint, request
 
+from restfull_api.business import register_user
+
 api = Blueprint('api', __name__)
 
 
