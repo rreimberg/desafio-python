@@ -3,6 +3,7 @@
 from functools import wraps
 
 from flask import Blueprint, request
+from werkzeug.exceptions import BadRequest
 
 from restfull_api.business import register_user
 
@@ -34,9 +35,9 @@ def index():
 @api.route("/register/", methods=["POST"])
 @requires_json
 def register():
-    data = request.json
     # check json structure explicitly
     try:
+        data = request.json
         data['name']
         data['email']
         data['password']
@@ -48,7 +49,7 @@ def register():
             phone['ddd']
             phone['number']
 
-    except (AssertionError, KeyError, TypeError):
+    except (AssertionError, KeyError, TypeError, BadRequest):
         return api_error('Request Inválida: formato dos parâmetros inválido', 400)
 
     if data['email'] == 'existent@email.com':
@@ -68,12 +69,12 @@ def register():
 @api.route("/login/", methods=["POST"])
 @requires_json
 def login():
-    data = request.json
 
     try:
+        data = request.json
         data['email']
         data['password']
-    except KeyError:
+    except (KeyError, BadRequest):
         return api_error('Request Inválida: formato dos parâmetros inválido', 400)
 
     if data['email'] == 'invalid@email.com':

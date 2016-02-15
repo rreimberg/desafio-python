@@ -32,6 +32,10 @@ class ApiTestCase(BaseTestCase):
 
         # empty request
 
+        response = self.client.post('/register/', headers=headers)
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(expected_response, response.data)
+
         response = self.client.post('/register/', data=json.dumps(params), headers=headers)
         self.assertEqual(400, response.status_code)
         self.assertEqual(expected_response, response.data)
@@ -110,6 +114,10 @@ class ApiTestCase(BaseTestCase):
         expected_response = '{"mensagem": "Request Inválida: formato dos parâmetros inválido"}'
 
         # empty request
+
+        response = self.client.post('/login/', headers=headers)
+        self.assertEqual(400, response.status_code)
+        self.assertEqual(expected_response, response.data)
 
         response = self.client.post('/login/', data=json.dumps(params), headers=headers)
         self.assertEqual(400, response.status_code)
