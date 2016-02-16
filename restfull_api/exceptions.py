@@ -7,3 +7,7 @@ class ValidationError(Exception):
 
 class DuplicatedEmail(Exception):
     message = 'Email já cadastrado'
+
+
+class InvalidLogin(Exception):
+    message = 'Usúário e/ou Senha inválidos'

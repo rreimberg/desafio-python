@@ -4,9 +4,10 @@ import hashlib
 import jwt
 from datetime import datetime
 from flask import current_app as app
+from sqlalchemy.orm.exc import NoResultFound
 
 from restfull_api import db
-from restfull_api.exceptions import DuplicatedEmail
+from restfull_api.exceptions import DuplicatedEmail, InvalidLogin
 from restfull_api.models import User
 
 
@@ -26,6 +27,24 @@ def register_user(data):
 
     db.session.add(user)
     db.session.commit()
+
+    return user, token
+
+
+def login_user(data):
+
+    try:
+        user = User.query.filter_by(email=data['email']).one()
+    except NoResultFound:
+        raise InvalidLogin()
+
+    if user.password != generate_hash(data['password']):
+        raise InvalidLogin()
+
+    token = generate_access_token(data['email'])
+
+    user.token = generate_hash(token)
+    user.last_login = datetime.utcnow()
 
     return user, token
 
