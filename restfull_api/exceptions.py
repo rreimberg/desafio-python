@@ -13,9 +13,13 @@ class InvalidLogin(ValidationError):
     message = 'Usuário e/ou senha inválidos'
 
 
-class InvalidToken(ValidationError):
+class AuthorizationError(Exception):
+    pass
+
+
+class InvalidToken(AuthorizationError):
     message = 'Não autorizado'
 
 
-class InvalidSession(ValidationError):
-    message = 'Sessão Expirada'
+class InvalidSession(AuthorizationError):
+    message = 'Sessão inválida'

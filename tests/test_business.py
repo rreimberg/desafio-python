@@ -168,10 +168,12 @@ class BusinessTestCase(BaseTestCase):
             email='joao@example.com',
             password='123',
             token=hashlib.sha1('token').hexdigest(),
+            created=datetime(2016, 2, 15, 19, 20, 21),
+            modified=datetime(2016, 2, 15, 19, 20, 21),
             last_login=datetime(2016, 2, 15, 19, 20, 21),
         )
         fetch_mock.return_value = db_user
 
-        user, token = get_profile('1', 'token')
+        user_data = get_profile('1', 'token')
 
-        self.assertEqual(user, db_user)
+        self.assertEqual(user_data['id'], db_user.id)

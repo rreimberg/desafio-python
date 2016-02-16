@@ -5,8 +5,8 @@ from functools import wraps
 from flask import Blueprint, request
 from werkzeug.exceptions import BadRequest
 
-from restfull_api.business import register_user, login_user
-from restfull_api.exceptions import ValidationError
+from restfull_api.business import get_profile, register_user, login_user
+from restfull_api.exceptions import AuthorizationError, ValidationError
 
 api = Blueprint('api', __name__)
 
@@ -88,21 +88,9 @@ def profile(user_id):
 
     token = request.headers['X-Token']
 
-    if token == 'inexistent token':
-        return api_error('Não autorizado', 401)
+    try:
+        user_data = get_profile(user_id, token)
+    except AuthorizationError as exc:
+        return api_error(exc.message, 401)
 
-    if token == 'another user token' and user_id == '1':
-        return api_error('Não autorizado', 401)
-
-    if token == 'expired token' and user_id == '1':
-        return api_error('Sessão inválida', 401)
-
-    user_data = {
-        'id': '',
-        'created': '',
-        'modified': '',
-        'last_login': '',
-        'token': '',
-    }
-
-    return user_data, 201
+    return user_data, 200

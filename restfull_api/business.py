@@ -65,7 +65,7 @@ def get_profile(id_, token):
     if datetime.utcnow() > expires:
         raise InvalidSession()
 
-    return user, token
+    return user_data(user, token)
 
 
 def generate_access_token(email):

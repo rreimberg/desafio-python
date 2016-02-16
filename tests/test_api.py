@@ -5,7 +5,7 @@ import mock
 
 from .base import BaseTestCase
 
-from restfull_api.exceptions import DuplicatedEmail
+from restfull_api.exceptions import DuplicatedEmail, InvalidSession
 
 
 class ApiTestCase(BaseTestCase):
@@ -189,7 +189,10 @@ class ApiTestCase(BaseTestCase):
         self.assertEqual(401, response.status_code)
         self.assertEqual(expected_response, response.data)
 
-    def test_profile_endpoint_with_expired_token(self):
+    @mock.patch('restfull_api.views.get_profile')
+    def test_profile_endpoint_with_expired_token(self, profile_mock):
+
+        profile_mock.side_effect = InvalidSession
 
         headers = {
             'Content-Type': 'application/json',
