@@ -10,7 +10,7 @@ class DuplicatedEmail(ValidationError):
 
 
 class InvalidLogin(ValidationError):
-    message = 'Usúário e/ou Senha inválidos'
+    message = 'Usuário e/ou senha inválidos'
 
 
 class InvalidToken(ValidationError):

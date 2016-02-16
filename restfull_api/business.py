@@ -47,7 +47,7 @@ def login_user(data):
     user.token = generate_hash(token)
     user.last_login = datetime.utcnow()
 
-    return user, token
+    return user_data(user, token)
 
 
 def get_profile(id_, token):

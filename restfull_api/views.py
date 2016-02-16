@@ -5,7 +5,7 @@ from functools import wraps
 from flask import Blueprint, request
 from werkzeug.exceptions import BadRequest
 
-from restfull_api.business import register_user
+from restfull_api.business import register_user, login_user
 from restfull_api.exceptions import ValidationError
 
 api = Blueprint('api', __name__)
@@ -72,18 +72,12 @@ def login():
     except (KeyError, BadRequest):
         return api_error('Request Inválida: formato dos parâmetros inválido', 400)
 
-    if data['email'] == 'invalid@email.com':
-        return api_error('Usuário e/ou senha inválidos')
+    try:
+        user_data = login_user(data)
+    except ValidationError as exc:
+        return api_error(exc.message, 400)
 
-    user_data = {
-        'id': '',
-        'created': '',
-        'modified': '',
-        'last_login': '',
-        'token': '',
-    }
-
-    return user_data, 201
+    return user_data, 200
 
 
 @api.route("/profile/<user_id>/", methods=["GET"])

@@ -104,7 +104,10 @@ class BusinessTestCase(BaseTestCase):
             id=1,
             name='Joao',
             email='joao@example.com',
-            password=hashlib.sha1('1234').hexdigest()
+            password=hashlib.sha1('1234').hexdigest(),
+            created=datetime(2016, 2, 15, 19, 20, 21),
+            modified=datetime(2016, 2, 15, 19, 20, 21),
+            last_login=datetime(2016, 2, 15, 19, 20, 21),
         )
         fetch_mock.return_value = db_user
 
@@ -113,10 +116,10 @@ class BusinessTestCase(BaseTestCase):
             'password': '1234',
         }
 
-        user, token = login_user(data)
+        user_data = login_user(data)
 
-        self.assertEqual(hashlib.sha1(token).hexdigest(), user.token)
-        self.assertEqual(datetime(2016, 2, 15, 19, 20, 21), user.last_login)
+        self.assertEqual(hashlib.sha1(user_data['token']).hexdigest(), db_user.token)
+        self.assertEqual(datetime(2016, 2, 15, 19, 20, 21), db_user.last_login)
 
     @mock.patch.object(BaseQuery, 'one')
     def test_profile_with_inexistent_token(self, fetch_mock):
