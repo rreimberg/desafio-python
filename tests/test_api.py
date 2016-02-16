@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import json
+import mock
 
 from .base import BaseTestCase
+
+from restfull_api.exceptions import DuplicatedEmail
 
 
 class ApiTestCase(BaseTestCase):
@@ -90,7 +93,11 @@ class ApiTestCase(BaseTestCase):
         response = self.client.post('/register/', data=json.dumps(params), headers=headers)
         self.assertEqual(201, response.status_code)
 
-    def test_register_pre_existent_email(self):
+    @mock.patch('restfull_api.views.register_user')
+    def test_register_pre_existent_email(self, register_mock):
+
+        register_mock.side_effect = DuplicatedEmail
+
         headers = {'Content-Type': 'application/json'}
 
         params = {

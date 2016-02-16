@@ -58,11 +58,10 @@ class BusinessTestCase(BaseTestCase):
             'phones': [{'ddd': '11', 'number': '987654321'}],
         }
 
-        user, token = register_user(data)
+        user_data = register_user(data)
 
-        self.assertEqual(1, user.id)
-        self.assertEqual('Joao', user.name)
-        self.assertEqual('mocked token', token)
+        self.assertEqual(1, user_data['id'])
+        self.assertEqual('mocked token', user_data['token'])
 
     @mock.patch.object(BaseQuery, 'one')
     def test_login_with_invalid_user(self, fetch_mock):

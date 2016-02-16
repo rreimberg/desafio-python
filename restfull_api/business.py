@@ -29,7 +29,7 @@ def register_user(data):
     db.session.add(user)
     db.session.commit()
 
-    return user, token
+    return user_data(user, token)
 
 
 def login_user(data):
@@ -76,3 +76,13 @@ def generate_access_token(email):
 
 def generate_hash(text):
     return hashlib.sha1(text).hexdigest()
+
+
+def user_data(user, token):
+    return {
+        'id': user.id,
+        'created': user.created.strftime('%Y-%m-%d %H:%M:%S'),
+        'modified': user.modified.strftime('%Y-%m-%d %H:%M:%S'),
+        'last_login': user.last_login.strftime('%Y-%m-%d %H:%M:%S'),
+        'token': token,
+    }

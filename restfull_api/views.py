@@ -6,6 +6,7 @@ from flask import Blueprint, request
 from werkzeug.exceptions import BadRequest
 
 from restfull_api.business import register_user
+from restfull_api.exceptions import ValidationError
 
 api = Blueprint('api', __name__)
 
@@ -52,16 +53,10 @@ def register():
     except (AssertionError, KeyError, TypeError, BadRequest):
         return api_error('Request Inválida: formato dos parâmetros inválido', 400)
 
-    if data['email'] == 'existent@email.com':
-        return api_error('Email já cadastrado')
-
-    user_data = {
-        'id': '',
-        'created': '',
-        'modified': '',
-        'last_login': '',
-        'token': '',
-    }
+    try:
+        user_data = register_user(data)
+    except ValidationError as exc:
+        return api_error(exc.message, 400)
 
     return user_data, 201
 
