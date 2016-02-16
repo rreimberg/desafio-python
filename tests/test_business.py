@@ -3,8 +3,10 @@
 import jwt
 import mock
 
+from datetime import datetime
 from freezegun import freeze_time
 from flask_sqlalchemy import BaseQuery
+from sqlalchemy.orm.exc import NoResultFound
 
 from .base import BaseTestCase
 
@@ -42,8 +44,23 @@ class BusinessTestCase(BaseTestCase):
         self.assertEqual('joao@example.com', decoded['email'])
         self.assertEqual('2016-02-15 19:56:52', decoded['access'])
 
-    def test_register_user_sucessful(self):
-        pass
+    @freeze_time('2016-02-15 19:56:52')
+    @mock.patch('restfull_api.business.generate_access_token')
+    def test_register_user_sucessful(self, token_mock):
+        token_mock.return_value = 'mocked token'
+
+        data = {
+            'name': 'Joao',
+            'email': 'joao@example.com',
+            'password': '1234',
+            'phones': [{'ddd': '11', 'number': '987654321'}],
+        }
+
+        user, token = register_user(data)
+
+        self.assertEqual(1, user.id)
+        self.assertEqual('Joao', user.name)
+        self.assertEqual('mocked token', token)
 
     def test_login_with_invalid_user(self):
         pass
