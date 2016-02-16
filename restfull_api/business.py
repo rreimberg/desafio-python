@@ -2,12 +2,13 @@
 
 import hashlib
 import jwt
-from datetime import datetime
+from datetime import datetime, timedelta
 from flask import current_app as app
 from sqlalchemy.orm.exc import NoResultFound
 
 from restfull_api import db
-from restfull_api.exceptions import DuplicatedEmail, InvalidLogin
+from restfull_api.exceptions import (DuplicatedEmail, InvalidLogin,
+                                     InvalidSession, InvalidToken)
 from restfull_api.models import User
 
 
@@ -45,6 +46,24 @@ def login_user(data):
 
     user.token = generate_hash(token)
     user.last_login = datetime.utcnow()
+
+    return user, token
+
+
+def get_profile(id_, token):
+
+    try:
+        user = User.query.filter_by(token=generate_hash(token)).one()
+    except NoResultFound:
+        raise InvalidToken()
+
+    if user.id != int(id_):
+        raise InvalidToken()
+
+    expires = user.last_login + timedelta(minutes=app.config['SESSION_EXPIRES'])
+
+    if datetime.utcnow() > expires:
+        raise InvalidSession()
 
     return user, token
 

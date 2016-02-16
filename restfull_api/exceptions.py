@@ -5,9 +5,17 @@ class ValidationError(Exception):
     pass
 
 
-class DuplicatedEmail(Exception):
+class DuplicatedEmail(ValidationError):
     message = 'Email já cadastrado'
 
 
-class InvalidLogin(Exception):
+class InvalidLogin(ValidationError):
     message = 'Usúário e/ou Senha inválidos'
+
+
+class InvalidToken(ValidationError):
+    message = 'Não autorizado'
+
+
+class InvalidSession(ValidationError):
+    message = 'Sessão Expirada'

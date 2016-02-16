@@ -11,11 +11,11 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from .base import BaseTestCase
 
-from restfull_api import db
-from restfull_api.business import (login_user, generate_access_token,
-                                   register_user)
-from restfull_api.exceptions import DuplicatedEmail, InvalidLogin
-from restfull_api.models import User, Phone
+from restfull_api.business import (get_profile, generate_access_token,
+                                   login_user, register_user)
+from restfull_api.exceptions import (DuplicatedEmail, InvalidLogin,
+                                     InvalidSession, InvalidToken)
+from restfull_api.models import User
 
 
 class BusinessTestCase(BaseTestCase):
@@ -119,14 +119,57 @@ class BusinessTestCase(BaseTestCase):
         self.assertEqual(hashlib.sha1(token).hexdigest(), user.token)
         self.assertEqual(datetime(2016, 2, 15, 19, 20, 21), user.last_login)
 
-    def test_profile_with_inexistent_token(self):
-        pass
+    @mock.patch.object(BaseQuery, 'one')
+    def test_profile_with_inexistent_token(self, fetch_mock):
+        fetch_mock.side_effect = NoResultFound
 
-    def test_profile_with_wrong_token(self):
-        pass
+        with self.assertRaises(InvalidToken):
+            get_profile('1', 'token')
 
-    def test_profile_with_expired_session(self):
-        pass
+    @mock.patch.object(BaseQuery, 'one')
+    def test_profile_with_wrong_token(self, fetch_mock):
+        db_user = User(
+            id=2,
+            name='Joao',
+            email='joao@example.com',
+            password='123',
+            token=hashlib.sha1('token').hexdigest(),
+            last_login=datetime(2016, 2, 15, 19, 20, 21),
+        )
+        fetch_mock.return_value = db_user
 
-    def test_sucessful_profile(self):
-        pass
+        with self.assertRaises(InvalidToken):
+            get_profile('1', 'token')
+
+    @freeze_time('2016-02-15 20:01:10')
+    @mock.patch.object(BaseQuery, 'one')
+    def test_profile_with_expired_session(self, fetch_mock):
+        db_user = User(
+            id=1,
+            name='Joao',
+            email='joao@example.com',
+            password='123',
+            token=hashlib.sha1('token').hexdigest(),
+            last_login=datetime(2016, 2, 15, 19, 20, 21),
+        )
+        fetch_mock.return_value = db_user
+
+        with self.assertRaises(InvalidSession):
+            get_profile('1', 'token')
+
+    @freeze_time('2016-02-15 19:40:10')
+    @mock.patch.object(BaseQuery, 'one')
+    def test_successful_profile(self, fetch_mock):
+        db_user = User(
+            id=1,
+            name='Joao',
+            email='joao@example.com',
+            password='123',
+            token=hashlib.sha1('token').hexdigest(),
+            last_login=datetime(2016, 2, 15, 19, 20, 21),
+        )
+        fetch_mock.return_value = db_user
+
+        user, token = get_profile('1', 'token')
+
+        self.assertEqual(user, db_user)
